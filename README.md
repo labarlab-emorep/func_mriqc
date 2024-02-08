@@ -7,7 +7,7 @@ Sub-package navigation:
   
 
 ## General Usage
-- Install into project environment on both the DCC (see [here](https://github.com/labarlab/conda_dcc)) and/or labarserv2 (see [here](https://github.com/labarlab/conda_labarserv2)) via `$ python setup.py install`.
+- Install into project environment on the DCC (see [here](https://github.com/labarlab/conda_dcc)) and/or labarserv2 (see [here](https://github.com/labarlab/conda_labarserv2)) via `$ python setup.py install`.
 - Trigger general package help and usage via entrypoint `$ func_mriqc`.
 
 ```
