@@ -100,7 +100,10 @@ Also, see [Diagrams](#diagrams)
 
 
 ## mriqc_group
-TODO
+
+### Setup
+
+### Usage
 
 
 ## Diagrams
