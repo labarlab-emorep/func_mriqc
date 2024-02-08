@@ -1,38 +1,31 @@
 r"""Conduct participant MRIQC.
 
-Run subjects through "participant" mode of MRIQC. Work is
-conducted in:
-    /work/<user>/EmoRep/Exp2_Compute_Emotion/data_scanner_BIDS/derivatives/mriqc
+Run subjects through "participant" mode of MRIQC. A single process of
+MRIQC is conducted for each subject, whick coordinates data download
+from Keoki, MRIQC execution, output upload to Keoki, and clean up.
 
-Final files saved to group directory:
-    /hpc/group/labarlab/EmoRep/Exp2_Compute_Emotion/data_scanner_BIDS/derivatives/mriqc
-
-A single process of MRIQC is conducted for each subject,
-and run scripts and parent/child stdout/err files are
-written to:
-    /work/<user>/EmoRep/Exp2_Compute_Emotion/data_scanner_BIDS/derivatives/logs/mriqc_<timestamp>.
-
-Requires environmental variable SING_MRIQC to supply paths to
-singularity image of MRIQC.
+Notes
+-----
+- Only supports single session at one time
+- Written to be executed on the Duke Compute Cluster
+- Requires global variables:
+    - SING_MRIQC - path to singularity image of MRIQC
+    - RSA_LS2 - path to RSA key for labarserv2
 
 Example
 -------
 mriqc_subj \
-    -k $RSA_LS2 \
     -s sub-ER0009 sub-ER0010 \
     -e ses-day2
 
-Notes
------
-Written to be executed on the Duke Compute Cluster.
-
 """
+
 # %%
 import os
 import sys
 import time
 import textwrap
-import socket
+import platform
 from datetime import datetime
 from argparse import ArgumentParser, RawTextHelpFormatter
 from func_mriqc import submit
@@ -93,13 +86,6 @@ def _get_args():
         type=str,
         required=True,
     )
-    required_args.add_argument(
-        "-k",
-        "--rsa-key",
-        type=str,
-        help="Location of labarserv2 RSA key",
-        required=True,
-    )
 
     if len(sys.argv) == 1:
         parser.print_help(sys.stderr)
@@ -111,6 +97,10 @@ def _get_args():
 # %%
 def main():
     """Setup and coordinate resources."""
+    # Check env
+    if "dcc" not in platform.uname().node:
+        print("mriqc_subj workflow is required to run on DCC.")
+        sys.exit(1)
 
     # Capture CLI arguments
     args = _get_args().parse_args()
@@ -119,7 +109,6 @@ def main():
     proj_dir = args.proj_dir
     proj_research = args.proj_research
     fd_thresh = args.fd_thresh
-    rsa_key = args.rsa_key
 
     # Setup group project directory, paths
     proj_raw = os.path.join(proj_dir, "rawdata")
@@ -159,7 +148,6 @@ def main():
             subj,
             sess,
             fd_thresh,
-            rsa_key,
         )
         time.sleep(3)
 
@@ -167,8 +155,7 @@ def main():
 if __name__ == "__main__":
     # Require proj env
     env_found = [x for x in sys.path if "emorep" in x]
-    host_name = socket.gethostname()
-    if not env_found and "dcc" not in host_name:
+    if not env_found:
         print("\nERROR: missing required project environment 'emorep'.")
         print("\tHint: $labar_env emorep\n")
         sys.exit(1)

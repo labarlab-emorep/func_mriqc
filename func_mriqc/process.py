@@ -6,6 +6,7 @@ mriqc_group : trigger MRIQC group-level
 CleanDcc : remove files from work, group locations
 
 """
+
 import os
 import glob
 import subprocess
@@ -33,11 +34,16 @@ class PushPull:
 
     """
 
-    def __init__(self, rsa_key: str, subj: str, sess: str):
+    def __init__(self, subj: str, sess: str):
         """Initialize."""
+        try:
+            self._rsa_key = os.environ["RSA_LS2"]
+        except KeyError as e:
+            raise Exception(
+                "No global variable 'RSA_LS2' defined in user env"
+            ) from e
         self._subj = subj
         self._sess = sess
-        self._rsa_key = rsa_key
         self._dcc_path = (
             "/hpc/group/labarlab/EmoRep/Exp2_Compute_Emotion/"
             + "data_scanner_BIDS"

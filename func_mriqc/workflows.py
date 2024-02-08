@@ -4,6 +4,7 @@ wf_mriqc_subj : conduct MRIQC for single subject and session
 wf_mriqc_group : conduct MRIQC for group
 
 """
+
 import os
 from func_mriqc import process
 
@@ -19,7 +20,6 @@ def wf_mriqc_subj(
     subj,
     sess,
     fd_thresh,
-    rsa_key,
 ):
     """Run MRIQC workflow for single subejct and session.
 
@@ -49,12 +49,10 @@ def wf_mriqc_subj(
         BIDS session identifier
     fd_thresh : float
         Framewise displacement value
-    rsa_key : str
-        RSA key for labarserv2
 
     """
     # Get data
-    push_pull = process.PushPull(rsa_key, subj, sess)
+    push_pull = process.PushPull(subj, sess)
     push_pull.pull_data()
 
     # Run MRIQC
@@ -80,5 +78,14 @@ def wf_mriqc_subj(
 
 
 def wf_mriqc_group(proj_raw, proj_mriqc):
-    """Trigger group-level MRIQC."""
+    """Trigger group-level MRIQC.
+
+    Parameters
+    ----------
+    proj_raw : str, os.PathLike
+        Location of project rawdir
+    proj_mriqc : str, os.PathLike
+        Location of project derivatives/mriqc
+
+    """
     process.mriqc_group(proj_raw, proj_mriqc)

@@ -4,6 +4,7 @@ submit_sbatch : submit bash command to SLURM scheduler
 schedule_subj : schedule subject workflow with SLURM
 
 """
+
 import sys
 import textwrap
 import subprocess
@@ -70,7 +71,6 @@ def schedule_subj(
     subj,
     sess,
     fd_thresh,
-    rsa_key,
 ):
     """Schedule Parent SBATCH job.
 
@@ -99,8 +99,6 @@ def schedule_subj(
         BIDS session identifier
     fd_thresh : float
         Framewise displacement value
-    rsa_key : str
-        RSA key for labarserv2
 
     Returns
     -------
@@ -136,7 +134,6 @@ def schedule_subj(
             "{subj}",
             "{sess}",
             {fd_thresh},
-            "{rsa_key}",
         )
 
     """
