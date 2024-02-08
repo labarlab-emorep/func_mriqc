@@ -89,7 +89,7 @@ Required Arguments:
 The `mriqc_subj` workflow will schedule SBATCH jobs for each subject that will:
 - Download data from Keoki
 - Execute MRIQC for subject data
-- Upload MRIQC to Keoki
+- Upload MRIQC results to Keoki (derivatives/mriqc)
 
 Also, see [Diagrams](#diagrams)
 
@@ -147,7 +147,7 @@ Also, see [Diagrams](#diagrams)
 
 
 ## Diagrams
-Diagram of processes, showing workflow as a function of package methods. Additionally, parent and child processes are illustrated, as well as which steps are multi-processed.
+Diagram of processes, showing workflow as a function of package methods. Login (CLI) vs scheduled (parent, child sbatch) processes are also illustrated.
 ![Process](diagrams/process.png)
 
 Diagram of imports.
