@@ -1,15 +1,19 @@
 # func_mriqc
-This package contains workflows for executing [MRIQC](https://mriqc.readthedocs.io/en/latest/) on individual subjects and groups. The individual subject workflow [`mriqc_subj`](#mriqc_subj) is written for the Duke Compute Cluster (DCC) while the group workflow [`mriqc_group`]() is written for labarserv2.
+This package contains workflows for executing [MRIQC](https://mriqc.readthedocs.io/en/latest/) on individual subjects and groups. The individual subject workflow `mriqc_subj` is written for the Duke Compute Cluster (DCC) while the group workflow `mriqc_group` is written for labarserv2.
 
+Sub-package navigation:
+- [mriqc_subj](#mriqc_subj)
+- [mriqc_group](#mriqc_group)
+  
 
-## Usage
+## General Usage
 - Install into project environment on both the DCC (see [here](https://github.com/labarlab/conda_dcc)) and/or labarserv2 (see [here](https://github.com/labarlab/conda_labarserv2)) via `$ python setup.py install`.
-- Trigger package help and usage via entrypoint `$ func_mriqc`.
+- Trigger general package help and usage via entrypoint `$ func_mriqc`.
 
 ```
 (emorep)[nmm51-dcc: ~]$func_mriqc 
 
-Version : 1.0.0
+Version : 1.1.0
 
 This package conducts MRIQC for subject- and group-level MRI
 datasets. Trigger helps and usages with the following entrypoints:
@@ -19,7 +23,7 @@ datasets. Trigger helps and usages with the following entrypoints:
 
 ```
 
-## Requirements
+## General Requirements
 - A singularity image of MRIQC on the DCC
 - A docker container of MRIQC on labarserv2
 
@@ -32,6 +36,7 @@ This sub-package executes MRIQC for each subject on the DCC.
 - Install into project environment on the DCC (see [here](https://github.com/labarlab/conda_dcc)) via `$ python setup.py install`
 - Store a singularity image of MRIQC on the DCC
 - Set the global variable `SING_MRIQC` to store the path to the singularity image
+- Set the global varialbe `RSA_LS2` to store the path to an RSA key for labarserv2
 
 
 ### Usage
@@ -39,37 +44,28 @@ Trigger sub-package help and usage via `$ mriqc_subj`:
 
 ```
 (emorep)[nmm51-dcc: ~]$mriqc_subj
-usage: mriqc_subj [-h] [--fd-thresh FD_THRESH] [--proj-dir PROJ_DIR]
-                  [--proj-research PROJ_RESEARCH] -s SUB_LIST [SUB_LIST ...] -e SESS -k
-                  RSA_KEY
+usage: mriqc_subj [-h] [--fd-thresh FD_THRESH] [--proj-dir PROJ_DIR] [--proj-research PROJ_RESEARCH] -s SUB_LIST [SUB_LIST ...] -e
+                  {ses-day2,ses-day3}
 
 Conduct participant MRIQC.
 
-Run subjects through "participant" mode of MRIQC. Work is
-conducted in:
-    /work/<user>/EmoRep/Exp2_Compute_Emotion/data_scanner_BIDS/derivatives/mriqc
+Run subjects through "participant" mode of MRIQC. A single process of
+MRIQC is conducted for each subject, whick coordinates data download
+from Keoki, MRIQC execution, output upload to Keoki, and clean up.
 
-Final files saved to group directory:
-    /hpc/group/labarlab/EmoRep/Exp2_Compute_Emotion/data_scanner_BIDS/derivatives/mriqc
-
-A single process of MRIQC is conducted for each subject,
-and run scripts and parent/child stdout/err files are
-written to:
-    /work/<user>/EmoRep/Exp2_Compute_Emotion/data_scanner_BIDS/derivatives/logs/mriqc_<timestamp>.
-
-Requires environmental variable SING_MRIQC to supply paths to
-singularity image of MRIQC.
+Notes
+-----
+- Only supports single session at one time
+- Written to be executed on the Duke Compute Cluster
+- Requires global variables:
+    - SING_MRIQC - path to singularity image of MRIQC
+    - RSA_LS2 - path to RSA key for labarserv2
 
 Example
 -------
 mriqc_subj \
-    -k $RSA_LS2 \
     -s sub-ER0009 sub-ER0010 \
     -e ses-day2
-
-Notes
------
-Written to be executed on the Duke Compute Cluster.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -85,9 +81,8 @@ optional arguments:
 Required Arguments:
   -s SUB_LIST [SUB_LIST ...], --sub-list SUB_LIST [SUB_LIST ...]
                         List of subject IDs to submit for MRIQC
-  -e SESS, --sess SESS  BIDS session ID
-  -k RSA_KEY, --rsa-key RSA_KEY
-                        Location of labarserv2 RSA key
+  -e {ses-day2,ses-day3}, --sess {ses-day2,ses-day3}
+                        BIDS session ID
 
 ```
 
@@ -97,6 +92,7 @@ The `mriqc_subj` workflow will schedule SBATCH jobs for each subject that will:
 - Upload MRIQC to Keoki
 
 Also, see [Diagrams](#diagrams)
+
 
 ### Considerations
 - Rawdata on Keoki needs to be in BIDS format
