@@ -1,9 +1,12 @@
 r"""Conduct group MRIQC.
 
-Written to be executed on the local VM labarserv2.
-
 Use the output of mriqc_subj (subject-level MRIQC) to get
 group-level stats.
+
+Notes
+-----
+- Written to be executed on the local VM labarserv2
+- Requires the docker container nipreps/mriqc
 
 Example
 -------
@@ -11,9 +14,11 @@ mriqc_group \
     -d /mnt/keoki/experiments2/EmoRep/Exp2_Compute_Emotion/data_scanner_BIDS/derivatives/mriqc
 
 """
+
 # %%
 import sys
 import textwrap
+import platform
 from argparse import ArgumentParser, RawTextHelpFormatter
 from func_mriqc import workflows
 
@@ -54,6 +59,10 @@ def _get_args():
 # %%
 def main():
     """Setup, run group MRIQC."""
+    # Check env
+    if "labarserv2" not in platform.uname().node:
+        print("mriqc_group is required to run on labarserv2.")
+        sys.exit(1)
 
     # Capture CLI arguments
     args = _get_args().parse_args()
