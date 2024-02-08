@@ -100,10 +100,50 @@ Also, see [Diagrams](#diagrams)
 
 
 ## mriqc_group
+This sub-package executes MRIQC for the group on labarserv2 using output from `mriqc_subj`.
+
 
 ### Setup
+- Install into project environment on labarserv2 (see [here](https://github.com/labarlab/conda_labarserv2)) via `$ python setup.py install`
+- Verify that docker is running `$ systemctl show --property ActiveState docker`
+- *Optional* Download nipreps/mriqc container `$ docker pull nipreps/mriqc:latest`
+
 
 ### Usage
+Trigger sub-package help and usage via `$ mriqc_group`:
+
+```
+(dev-nate_emorep)[nmm51-vm: ~]$mriqc_group
+usage: mriqc_group [-h] [--proj-raw PROJ_RAW] -d DERIV_DIR
+
+Conduct group MRIQC.
+
+Use the output of mriqc_subj (subject-level MRIQC) to get
+group-level stats.
+
+Notes
+-----
+- Written to be executed on the local VM labarserv2
+- Requires the docker container nipreps/mriqc
+
+Example
+-------
+mriqc_group \
+    -d /mnt/keoki/experiments2/EmoRep/Exp2_Compute_Emotion/data_scanner_BIDS/derivatives/mriqc
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --proj-raw PROJ_RAW   Path to BIDS-formatted project rawdata directory
+                        (default : /mnt/keoki/experiments2/EmoRep/Exp2_Compute_Emotion/data_scanner_BIDS/rawdata)
+
+Required Arguments:
+  -d DERIV_DIR, --deriv-dir DERIV_DIR
+                        Path to MRIQC derivatives directory
+```
+
+The `mriqc_group` workflow will conduct group-level analyses on `mriqc_subj` output.
+
+Also, see [Diagrams](#diagrams)
 
 
 ## Diagrams
