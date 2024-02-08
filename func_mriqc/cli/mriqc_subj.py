@@ -82,6 +82,7 @@ def _get_args():
     required_args.add_argument(
         "-e",
         "--sess",
+        choices=["ses-day2", "ses-day3"],
         help="BIDS session ID",
         type=str,
         required=True,
