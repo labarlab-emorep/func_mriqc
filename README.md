@@ -4,14 +4,14 @@ This package contains workflows for executing [MRIQC](https://mriqc.readthedocs.
 Sub-package navigation:
 - [mriqc_subj](#mriqc_subj)
 - [mriqc_group](#mriqc_group)
-  
+
 
 ## General Usage
-- Install into project environment on the DCC (see [here](https://github.com/labarlab/conda_dcc)) and/or labarserv2 (see [here](https://github.com/labarlab/conda_labarserv2)) via `$ python setup.py install`.
-- Trigger general package help and usage via entrypoint `$ func_mriqc`.
+- Install into project environment on the DCC (see [here](https://github.com/labarlab/conda_dcc)) and/or labarserv2 (see [here](https://github.com/labarlab/conda_labarserv2)) via `$python setup.py install`.
+- Trigger general package help and usage via entrypoint `$func_mriqc`.
 
 ```
-(emorep)[nmm51-dcc: ~]$func_mriqc 
+(emorep)[nmm51-dcc: ~]$func_mriqc
 
 Version : 1.1.0
 
@@ -20,7 +20,6 @@ datasets. Trigger helps and usages with the following entrypoints:
 
     mriqc_subj    : conduct subject-level MRIQC
     mriqc_group   : conduct group-level MRIQC
-
 ```
 
 ## General Requirements
@@ -29,7 +28,7 @@ datasets. Trigger helps and usages with the following entrypoints:
 
 
 ## mriqc_subj
-This sub-package executes MRIQC for each subject on the DCC. 
+This sub-package executes MRIQC for each subject on the DCC.
 
 
 ### Setup
@@ -86,16 +85,20 @@ Required Arguments:
 
 ```
 
+
+### Functionality
 The `mriqc_subj` workflow will schedule SBATCH jobs for each subject that will:
 - Download data from Keoki
 - Execute MRIQC for subject data
-- Upload MRIQC results to Keoki (derivatives/mriqc)
+- Upload MRIQC results to Keoki
+
+Output will be written to `derivatives/mriqc` and organized to default MRIQC output structure (BIDS).
 
 Also, see [Diagrams](#diagrams)
 
 
 ### Considerations
-- Rawdata on Keoki needs to be in BIDS format
+- rawdata on Keoki needs to be in BIDS format (see [build_rawdata](https://github.com/labarlab-emorep/build_rawdata))
 - Only a single session can be executed at once, triggering the workflow for different simultaneous sessions of the same subject will result in process failures
 
 
@@ -104,13 +107,13 @@ This sub-package executes MRIQC for the group on labarserv2 using output from `m
 
 
 ### Setup
-- Install into project environment on labarserv2 (see [here](https://github.com/labarlab/conda_labarserv2)) via `$ python setup.py install`
-- Verify that docker is running `$ systemctl show --property ActiveState docker`
-- *Optional* Download nipreps/mriqc container `$ docker pull nipreps/mriqc:latest`
+- Install into project environment on labarserv2 (see [here](https://github.com/labarlab/conda_labarserv2)) via `$python setup.py install`
+- Verify that docker is running `$systemctl show --property ActiveState docker`
+- Download nipreps/mriqc container `$docker pull nipreps/mriqc:latest`
 
 
 ### Usage
-Trigger sub-package help and usage via `$ mriqc_group`:
+Trigger sub-package help and usage via `$mriqc_group`:
 
 ```
 (dev-nate_emorep)[nmm51-vm: ~]$mriqc_group
@@ -141,7 +144,18 @@ Required Arguments:
                         Path to MRIQC derivatives directory
 ```
 
-The `mriqc_group` workflow will conduct group-level analyses on `mriqc_subj` output.
+
+### Functionality
+The `mriqc_group` workflow will conduct group-level analyses on `mriqc_subj` output. Output will be saved to derivatives/mriqc:
+
+```
+derivatives/mriqc/
+├── dataset_description.json
+├── group_bold.html
+├── group_bold.tsv
+├── group_T1w.html
+└── group_T1w.tsv
+```
 
 Also, see [Diagrams](#diagrams)
 
