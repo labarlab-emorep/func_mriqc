@@ -5,18 +5,18 @@ group-level stats.
 
 Notes
 -----
-- Written to be executed on the local VM labarserv2
+- Written to be executed on the local lab VM
 - Requires the docker container nipreps/mriqc
 
 Example
 -------
 mriqc_group \
-    -d /mnt/keoki/experiments2/EmoRep/Exp2_Compute_Emotion/data_scanner_BIDS/derivatives/mriqc
+    -d f"{os.environ["SERVER_BIDS_DIR"]}/derivatives/mriqc"
 
 """
 
 # %%
-import sys
+import sys, os
 import textwrap
 import platform
 from argparse import ArgumentParser, RawTextHelpFormatter
@@ -31,7 +31,7 @@ def _get_args():
     parser.add_argument(
         "--proj-raw",
         type=str,
-        default="/mnt/keoki/experiments2/EmoRep/Exp2_Compute_Emotion/data_scanner_BIDS/rawdata",  # noqa: E501
+        default=f"{os.environ["SERVER_BIDS_DIR"]}/rawdata",  # noqa: E501
         help=textwrap.dedent(
             """\
             Path to BIDS-formatted project rawdata directory
@@ -60,8 +60,8 @@ def _get_args():
 def main():
     """Setup, run group MRIQC."""
     # Check env
-    if "labarserv2" not in platform.uname().node:
-        print("mriqc_group is required to run on labarserv2.")
+    if os.environ["SERVER_NAME"] not in platform.uname().node:
+        print("mriqc_group is required to run on the lab server.")
         sys.exit(1)
 
     # Capture CLI arguments

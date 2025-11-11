@@ -88,7 +88,6 @@ def schedule_subj(
         Location of work log directory
     proj_research : path
         Location of group research bin, contains simg file
-        e.g. /hpc/group/labarlab/research_bin
     proj_raw : path
         Location of project rawdir
     proj_mriqc : path

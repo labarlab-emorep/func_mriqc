@@ -1,6 +1,6 @@
 """Resources for conducting MRIQC.
 
-PushPull : sync relevant files with Keoki.
+PushPull : sync relevant files with lab data server.
 mriqc_subj : trigger MRIQC for single subject
 mriqc_group : trigger MRIQC group-level
 CleanDcc : remove files from work, group locations
@@ -23,14 +23,14 @@ def _bash_subprocess(bash_cmd: str) -> Tuple:
 
 
 class PushPull:
-    """Get and send relevant files to Keoki.
+    """Get and send relevant files to lab data server.
 
     Methods
     -------
     pull_data()
         Download rawdata to DCC
     push_data(subj_final)
-        Upload final subject directory to Keoki
+        Upload final subject directory to lab data server
 
     """
 
@@ -44,23 +44,17 @@ class PushPull:
             ) from e
         self._subj = subj
         self._sess = sess
-        self._dcc_path = (
-            "/hpc/group/labarlab/EmoRep/Exp2_Compute_Emotion/"
-            + "data_scanner_BIDS"
-        )
+        self._dcc_path = os.environ["CLUSTER_BIDS_DIR"]
 
         # Setup remote paths, addresses
-        self._keoki_path = (
-            "/mnt/keoki/experiments2/EmoRep/"
-            + "Exp2_Compute_Emotion/data_scanner_BIDS"
-        )
-        self._keoki_addr = f"{os.environ['USER']}@ccn-labarserv2.vm.duke.edu"
-        self._keoki_full = f"{self._keoki_addr}:{self._keoki_path}"
+        self._server_path = os.environ["SERVER_BIDS_DIR"]
+        self._server_addr = f"{os.environ['USER']}@{os.environ["SERVER_ADDR"]}"
+        self._server_full = f"{self._server_addr}:{self._server_path}"
 
     def pull_data(self):
-        """Download session rawdata from keoki."""
+        """Download session rawdata from lab data server."""
         src = os.path.join(
-            f"{self._keoki_full}",
+            f"{self._server_full}",
             "rawdata",
             self._subj,
             self._sess,
@@ -72,25 +66,25 @@ class PushPull:
 
     def push_data(self, subj_final: Union[str, os.PathLike]):
         """Push data to remote destination."""
-        dst = f"{self._keoki_addr}:{self._keoki_path}/derivatives/mriqc"
+        dst = f"{self._server_addr}:{self._server_path}/derivatives/mriqc"
         self._mk_dst()
         _, _ = self._submit_rsync(subj_final, dst)
 
     def _mk_dst(self):
         """Make remote destination."""
-        keoki_dst = os.path.join(
-            self._keoki_path, "derivatives/mriqc", self._subj, self._sess
+        server_dst = os.path.join(
+            self._server_path, "derivatives/mriqc", self._subj, self._sess
         )
         make_dst = f"""\
             ssh \
                 -i {self._rsa_key} \
-                {self._keoki_addr} \
-                " command ; bash -c 'mkdir -p {keoki_dst}'"
+                {self._server_addr} \
+                " command ; bash -c 'mkdir -p {server_dst}'"
             """
         _, _ = _bash_subprocess(make_dst)
 
     def _submit_rsync(self, src: str, dst: str) -> Tuple:
-        """Execute rsync between DCC and labarserv2."""
+        """Execute rsync between DCC and the lab server."""
         bash_cmd = f"""\
             rsync \
             -e "ssh -i {self._rsa_key}" \
@@ -129,7 +123,6 @@ def mriqc_subj(
         Location of work log directory
     proj_research : path
         Location of group research bin, contains simg file
-        e.g. /hpc/group/labarlab/research_bin
     proj_raw : path
         Location of project rawdir
     proj_mriqc : path

@@ -2,7 +2,7 @@ r"""Conduct participant MRIQC.
 
 Run subjects through "participant" mode of MRIQC. A single process of
 MRIQC is conducted for each subject, whick coordinates data download
-from Keoki, MRIQC execution, output upload to Keoki, and clean up.
+from lab data server, MRIQC execution, output upload to lab data server, and clean up.
 
 Notes
 -----
@@ -10,7 +10,7 @@ Notes
 - Written to be executed on the Duke Compute Cluster
 - Requires global variables:
     - SING_MRIQC - path to singularity image of MRIQC
-    - RSA_LS2 - path to RSA key for labarserv2
+    - RSA_LS2 - path to RSA key for the lab server
 
 Example
 -------
@@ -50,7 +50,7 @@ def _get_args():
     parser.add_argument(
         "--proj-dir",
         type=str,
-        default="/hpc/group/labarlab/EmoRep/Exp2_Compute_Emotion/data_scanner_BIDS",  # noqa: E501
+        default=os.environ["CLUSTER_BIDS_DIR"],  # noqa: E501
         help=textwrap.dedent(
             """\
             Path to BIDS-formatted project directory
@@ -61,7 +61,7 @@ def _get_args():
     parser.add_argument(
         "--proj-research",
         type=str,
-        default="/hpc/group/labarlab/research_bin",
+        default=os.environ["CLUSTER_BIN_DIR"],
         help=textwrap.dedent(
             """\
             Path to parent directory of mriqc.simg location
@@ -122,7 +122,7 @@ def main():
     user_name = os.environ["USER"]
 
     # Setup work directory, for intermediates
-    work_deriv = os.path.join("/work", user_name, "EmoRep")
+    work_deriv = os.path.join(os.environ["WORK_DIR"], user_name, "EmoRep")
     now_time = datetime.now()
     log_dir = os.path.join(
         work_deriv, f"logs/mriqc_{now_time.strftime('%y-%m-%d_%H:%M')}"

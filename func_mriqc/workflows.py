@@ -23,8 +23,8 @@ def wf_mriqc_subj(
 ):
     """Run MRIQC workflow for single subejct and session.
 
-    Pull required data from Keoki, executed MRIQC, and then
-    push output back to Keoki.
+    Pull required data from lab data server, executed MRIQC, and then
+    push output back to lab data server.
 
     Parameters
     ----------
@@ -38,7 +38,6 @@ def wf_mriqc_subj(
         Location of work log directory
     proj_research : str, os.PathLike
         Location of group research bin, contains simg file
-        e.g. /hpc/group/labarlab/research_bin
     proj_raw : str, os.PathLike
         Location of project rawdir
     proj_mriqc : str, os.PathLike
