@@ -116,7 +116,7 @@ This sub-package executes MRIQC for the group on the lab server using output fro
 Trigger sub-package help and usage via `$mriqc_group`:
 
 ```
-(dev-nate_emorep)[nmm51-vm: ~]$mriqc_group
+(dev-nate_emorep)[user-vm: ~]$mriqc_group
 usage: mriqc_group [-h] [--proj-raw PROJ_RAW] -d DERIV_DIR
 
 Conduct group MRIQC.
